@@ -123,8 +123,11 @@ export default function App() {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState('#111111');
+  const [selectedSize, setSelectedSize] = useState('M');
   const slideDuration = 4000; // 4 seconds per slide
   const carouselRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0); // tracks raw progress outside of state to avoid Strict Mode double-invoke
 
   useEffect(() => {
     if (quickViewProduct) {
@@ -213,7 +216,7 @@ export default function App() {
       id: '03',
       title: 'ART MEETS\nATTITUDE',
       subtitle: 'Art Meets Attitude',
-      description: 'A statement piece with vibrant neon details and rebellious street art influences for a standout look.',
+      description: 'Bold graphics, edgy typography, and urban-inspired designs turn every outfit into a statement of self-expression.',
       image: 'https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg',
     },
     {
@@ -233,18 +236,19 @@ export default function App() {
   ];
 
   useEffect(() => {
-    const interval = 50; // Update progress every 50ms
-    const step = (interval / slideDuration) * 100;
+    const INTERVAL = 50;
+    const step = (INTERVAL / slideDuration) * 100;
 
     const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setCurrentSlide((current) => (current + 1) % slides.length);
-          return 0;
-        }
-        return prev + step;
-      });
-    }, interval);
+      progressRef.current += step;
+      if (progressRef.current >= 100) {
+        progressRef.current = 0;
+        setCurrentSlide((current) => (current + 1) % slides.length);
+        setProgress(0);
+      } else {
+        setProgress(progressRef.current);
+      }
+    }, INTERVAL);
 
     return () => clearInterval(timer);
   }, [slides.length]);
@@ -252,7 +256,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       {/* Top Bar */}
-      <div className="bg-[#1a1a1a] text-white text-xs py-2 px-12 lg:px-24 flex justify-between items-center">
+      <div className="bg-[#1a1a1a] text-white text-xs py-2 px-4 sm:px-8 lg:px-24 flex justify-between items-center">
         <div className="flex gap-4">
           <a href="#" className="hover:text-gray-300"><Facebook size={14} /></a>
           <a href="#" className="hover:text-gray-300"><Instagram size={14} /></a>
@@ -265,23 +269,28 @@ export default function App() {
       </div>
 
       {/* Navigation */}
-      <nav className="py-6 px-12 lg:px-24 flex justify-between items-center">
+      <nav className="py-4 px-4 sm:px-8 lg:px-24 flex justify-between items-center">
         <div 
-          className="text-4xl font-display font-bold tracking-tighter cursor-pointer"
+          className="text-3xl sm:text-4xl font-display font-bold tracking-tighter cursor-pointer"
           onClick={() => setCurrentPage('home')}
         >VELARO</div>
-        <div className="hidden md:flex items-center gap-10">
-          <div className="flex gap-8 text-xl font-display uppercase tracking-wide">
+        <div className="flex items-center gap-4 md:gap-10">
+          <div className="hidden md:flex gap-8 text-xl font-display uppercase tracking-wide">
             <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('shop'); }} className="hover:text-gray-600">Shop</a>
           </div>
-          <button onClick={() => setIsCartOpen(true)} className="hover:text-gray-600 ml-2 relative">
-            <ShoppingCart size={26} strokeWidth={1.5} />
+          <button onClick={() => setIsCartOpen(true)} className="hover:text-gray-600 relative">
+            <ShoppingCart size={24} strokeWidth={1.5} />
             {cartItemCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartItemCount}
               </span>
             )}
           </button>
+          {/* Mobile shop link */}
+          <button
+            className="md:hidden font-display font-bold text-sm uppercase tracking-wide hover:text-gray-600"
+            onClick={() => setCurrentPage('shop')}
+          >Shop</button>
         </div>
       </nav>
 
@@ -289,8 +298,8 @@ export default function App() {
         {currentPage === 'home' ? (
           <>
             {/* Hero Section */}
-            <section className="px-12 lg:px-24 py-6">
-          <div className="bg-[#1a1a1a] rounded-[2rem] overflow-hidden relative h-[700px]">
+            <section className="px-3 sm:px-6 lg:px-24 py-3 sm:py-6">
+          <div className="bg-[#121212] rounded-[20px] sm:rounded-[30px] overflow-hidden relative h-[480px] sm:h-[580px] lg:h-[700px]">
             {/* Hero Images */}
             {slides.map((slide, index) => (
               <div
@@ -299,61 +308,81 @@ export default function App() {
                   index === currentSlide ? 'opacity-100 z-0' : 'opacity-0 -z-10'
                 }`}
               >
-                <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                <img src={slide.image} alt={slide.title} className="w-full h-full object-cover object-center" referrerPolicy="no-referrer" />
+                {/* Overlay 1: bottom gradient — transparent → black/60 */}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)' }}></div>
+                {/* Overlay 2: left gradient — right→left, transparent → black/60 */}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(270deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)' }}></div>
               </div>
             ))}
             
-            {/* Hero Content */}
-            <div className="absolute inset-0 p-16 flex flex-col justify-center max-w-3xl z-10 pointer-events-none">
-              <h1 className="text-white text-[5.5rem] font-display font-bold leading-[0.85] tracking-tighter mb-6 whitespace-pre-line pointer-events-auto">
+            {/* Hero Content — left aligned, sits above the navigator */}
+            <div key={currentSlide} className="absolute bottom-[120px] sm:bottom-[145px] lg:bottom-[155px] left-0 right-0 px-5 sm:px-10 lg:px-14 z-10 pointer-events-none">
+              <h1
+                className="hero-title-animate text-white uppercase mb-3 whitespace-pre-line pointer-events-auto"
+                style={{ fontFamily: '"Big Shoulders", sans-serif', fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 700, lineHeight: '1em' }}
+              >
                 {slides[currentSlide].title}
               </h1>
-              <p className="text-white/70 text-lg mb-10 max-w-xl font-medium leading-relaxed pointer-events-auto">
+              <p
+                className="hero-desc-animate mb-5 max-w-sm pointer-events-auto hidden sm:block"
+                style={{ fontFamily: '"Poppins", sans-serif', fontSize: '14px', lineHeight: '1.6em', color: 'rgba(255,255,255,0.36)' }}
+              >
                 {slides[currentSlide].description}
               </p>
-              <div className="pointer-events-auto w-fit">
-                <button 
+              <div className="hero-btn-animate pointer-events-auto w-fit">
+                <button
                   onClick={() => setCurrentPage('shop')}
-                  className="bg-white text-black rounded-full pl-6 pr-2 py-2 flex items-center gap-4 text-sm font-bold tracking-wide hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="bg-white text-black rounded-full pl-5 pr-1.5 py-1.5 flex items-center gap-3 text-xs sm:text-sm font-bold tracking-wide hover:bg-gray-200 transition-colors cursor-pointer"
+                  style={{ fontFamily: '"Poppins", sans-serif' }}
                 >
-                  Shop now 
-                  <span className="bg-black text-white rounded-full p-2">
-                    <ArrowRight size={16} />
+                  Shop now
+                  <span className="bg-black text-white rounded-full p-1.5 sm:p-2">
+                    <ArrowRight size={14} />
                   </span>
                 </button>
               </div>
             </div>
 
-            {/* Hero Progress Bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-12 flex gap-4 z-20">
+            {/* Navigator — per-card top border with white progress fill overlaying it */}
+            <div className="absolute bottom-0 left-0 right-0 z-20 flex px-5 sm:px-10 lg:px-14 pb-4 sm:pb-6 lg:pb-8 pt-3 sm:pt-5">
               {slides.map((slide, index) => (
-                <div 
-                  key={slide.id} 
-                  className="flex-1 relative cursor-pointer group"
+                <div
+                  key={slide.id}
+                  className="flex-1 cursor-pointer pr-2 sm:pr-6 lg:pr-8 pt-3 sm:pt-5 relative transition-opacity duration-300 min-w-0"
+                  style={{
+                    opacity: index === currentSlide ? 1 : 0.4,
+                    borderTop: '1px solid rgba(255,255,255,0.2)',
+                  }}
                   onClick={() => {
                     setCurrentSlide(index);
                     setProgress(0);
+                    progressRef.current = 0;
                   }}
                 >
-                  {/* Base Line */}
-                  <div className="h-[2px] w-full bg-white/20 absolute top-0 left-0 transition-colors group-hover:bg-white/40"></div>
-                  
-                  {/* Progress Line */}
-                  <div 
-                    className="h-[2px] bg-white absolute top-0 left-0 transition-all duration-75 ease-linear"
-                    style={{ 
-                      width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%' 
-                    }}
-                  ></div>
+                  {/* White progress fill — sits directly on top of the border line */}
+                  {index === currentSlide && (
+                    <div
+                      className="absolute left-0 bg-white transition-[width] duration-75 ease-linear"
+                      style={{ top: '-1px', height: '2px', width: `${progress}%` }}
+                    />
+                  )}
 
-                  {/* Content */}
-                  <div className={`pt-6 transition-colors duration-300 ${
-                    index === currentSlide ? 'text-white' : 'text-white/50 group-hover:text-white/70'
-                  }`}>
-                    <div className="font-display text-2xl font-bold mb-2">{slide.id}</div>
-                    <div className="text-sm font-medium whitespace-pre-line leading-tight">{slide.subtitle}</div>
-                  </div>
+                  {/* Slide number */}
+                  <h5
+                    className="text-white mb-0.5 sm:mb-1 truncate"
+                    style={{ fontFamily: '"Big Shoulders", sans-serif', fontSize: 'clamp(12px, 2vw, 20px)', fontWeight: 700 }}
+                  >
+                    {slide.id}
+                  </h5>
+
+                  {/* Slide label — hidden on very small screens */}
+                  <p
+                    className="text-white hidden sm:block truncate"
+                    style={{ fontFamily: '"Poppins", sans-serif', fontSize: '11px', lineHeight: '1.4em' }}
+                  >
+                    {slide.subtitle}
+                  </p>
                 </div>
               ))}
             </div>
@@ -361,9 +390,9 @@ export default function App() {
         </section>
 
         {/* New Drops Section */}
-        <section className="px-12 lg:px-24 py-16">
-          <div className="max-w-2xl mb-12">
-            <h2 className="text-5xl font-bold mb-4 tracking-tight">NEW DROPS</h2>
+        <section className="px-4 sm:px-8 lg:px-24 py-10 lg:py-16">
+          <div className="max-w-2xl mb-8 lg:mb-12">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight">NEW DROPS</h2>
             <p className="text-gray-500">Stand out with our latest collection—bold designs, premium fabrics, and street-ready fits. Once they're gone, they're gone. Don't miss out!</p>
           </div>
 
@@ -425,22 +454,22 @@ export default function App() {
         </section>
 
         {/* Features Grid */}
-        <section className="px-12 lg:px-24 py-16">
-          <div className="max-w-3xl mb-12">
-            <h2 className="text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">SHIP YOUR WEBSITE QUICKLY WITH<br/>FRAMEBLOX</h2>
+        <section className="px-4 sm:px-8 lg:px-24 py-10 lg:py-16">
+          <div className="max-w-3xl mb-8 lg:mb-12">
+            <h2 className="text-3xl sm:text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">SHIP YOUR WEBSITE QUICKLY WITH<br/>FRAMEBLOX</h2>
             <p className="text-gray-500 font-medium max-w-2xl">Use prebuilt templates and components for a professional, stunning look. Save time and focus on content with our user-friendly, customizable design solutions.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {/* Top Left Image */}
-            <div className="md:col-span-2 rounded-[2rem] overflow-hidden h-[450px] relative">
+            <div className="md:col-span-2 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden h-[260px] sm:h-[350px] md:h-[450px] relative">
               <img src="https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg" alt="Orange Hoodie" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </div>
             
             {/* Top Right Black Card */}
-            <div className="md:col-span-1 bg-[#111111] text-white rounded-[2rem] p-10 flex flex-col justify-end h-[450px]">
-              <h3 className="text-3xl font-display font-bold mb-4 leading-tight uppercase tracking-tight">BUILT BY THE STREETS, MADE FOR YOU</h3>
-              <p className="text-gray-400 mb-8 text-sm font-medium leading-relaxed">From the streets to your style—our journey is all about self-expression and rebellion. Join the movement.</p>
+            <div className="md:col-span-1 bg-[#111111] text-white rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 flex flex-col justify-end min-h-[260px] md:h-[450px]">
+              <h3 className="text-xl sm:text-3xl font-display font-bold mb-3 leading-tight uppercase tracking-tight">BUILT BY THE STREETS, MADE FOR YOU</h3>
+              <p className="text-gray-400 mb-6 text-sm font-medium leading-relaxed">From the streets to your style—our journey is all about self-expression and rebellion. Join the movement.</p>
               <div>
                 <button className="bg-white text-black rounded-full pl-5 pr-1.5 py-1.5 flex items-center gap-3 text-sm font-bold tracking-wide hover:bg-gray-200 transition-colors w-fit">
                   Read our story 
@@ -452,9 +481,9 @@ export default function App() {
             </div>
 
             {/* Bottom Left Gray Card */}
-            <div className="md:col-span-1 bg-[#e5e5e5] rounded-[2rem] p-10 flex flex-col justify-end h-[450px]">
-              <h3 className="text-3xl font-display font-bold mb-4 leading-tight text-[#111111] uppercase tracking-tight">ELEVATE YOUR STREET GAME</h3>
-              <p className="text-gray-500 mb-8 text-sm font-medium leading-relaxed">From bold graphics to everyday essentials, explore our latest drops and signature pieces designed for the culture.</p>
+            <div className="md:col-span-1 bg-[#e5e5e5] rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 flex flex-col justify-end min-h-[260px] md:h-[450px]">
+              <h3 className="text-xl sm:text-3xl font-display font-bold mb-3 leading-tight text-[#111111] uppercase tracking-tight">ELEVATE YOUR STREET GAME</h3>
+              <p className="text-gray-500 mb-6 text-sm font-medium leading-relaxed">From bold graphics to everyday essentials, explore our latest drops and signature pieces designed for the culture.</p>
               <div>
                 <button 
                   onClick={() => setCurrentPage('shop')}
@@ -469,24 +498,27 @@ export default function App() {
             </div>
 
             {/* Bottom Right Image */}
-            <div className="md:col-span-2 rounded-[2rem] overflow-hidden h-[450px] relative">
+            <div className="md:col-span-2 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden h-[260px] sm:h-[350px] md:h-[450px] relative">
               <img src="https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg" alt="White Tee" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </div>
           </div>
         </section>
 
         {/* Story Section */}
-        <section className="px-12 lg:px-24 py-24 border-t border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <section className="px-4 sm:px-8 lg:px-24 py-12 sm:py-24 border-t border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div>
-              <p className="text-xl mb-4 text-gray-600">Streetwear with a Story</p>
-              <h2 className="text-7xl font-bold leading-[0.9] tracking-tighter">WEAR THE<br/>MOVEMENT,<br/>BREAK THE<br/>MOLD.</h2>
+              <p className="text-base sm:text-xl mb-3 text-gray-600">Streetwear with a Story</p>
+              <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[0.9] tracking-tighter">WEAR THE<br/>MOVEMENT,<br/>BREAK THE<br/>MOLD.</h2>
             </div>
             <div className="space-y-6 text-gray-600">
               <p>Born from the pulse of the streets, our brand is a tribute to the rebels, the dreamers, and the rule-breakers who shape the culture. Inspired by the raw energy of city life—graffiti-covered alleys, underground music scenes, and late-night skate sessions—we craft streetwear that speaks to individuality and self-expression.</p>
               <p>Every stitch, every design, and every drop is a reflection of the movement, blending bold graphics, oversized silhouettes, and urban edge. More than just clothing, we're a statement—wear your story, break the mold, and define your own path.</p>
               <div className="pt-4">
-                <button className="bg-black text-white border border-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-white hover:text-black transition-colors">
+                <button 
+                  onClick={() => setCurrentPage('shop')}
+                  className="bg-black text-white border border-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-white hover:text-black transition-colors"
+                >
                   Get it now <ArrowRight size={16} />
                 </button>
               </div>
@@ -495,9 +527,9 @@ export default function App() {
         </section>
 
         {/* Featured Drops Carousel */}
-        <section className="py-24 bg-white overflow-hidden">
-          <div className="max-w-3xl mx-auto mb-12 px-12 lg:px-24">
-            <h2 className="text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">FEATURED DROPS: STAND OUT, STAY<br/>AHEAD</h2>
+        <section className="py-12 sm:py-24 bg-white overflow-hidden">
+          <div className="max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-8 lg:px-24">
+            <h2 className="text-2xl sm:text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">FEATURED DROPS: STAND OUT, STAY AHEAD</h2>
             <p className="text-gray-500 font-medium">Exclusive designs, premium materials, and street-ready vibes—these must-have pieces are setting the trend. Get yours before they're gone!</p>
           </div>
 
@@ -522,7 +554,7 @@ export default function App() {
             ))}
           </div>
 
-          <div className="flex gap-3 max-w-3xl mx-auto px-12 lg:px-24 mt-2">
+          <div className="flex gap-3 max-w-3xl mx-auto px-4 sm:px-8 lg:px-24 mt-2">
             <button 
               onClick={() => scrollCarousel('left')}
               className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center hover:bg-white hover:text-black hover:border hover:border-black transition-colors"
@@ -539,18 +571,21 @@ export default function App() {
         </section>
 
         {/* Product Feature Section */}
-        <section className="bg-[#1a1a1a] text-white py-24 px-12 lg:px-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+        <section className="bg-[#1a1a1a] text-white py-12 sm:py-24 px-4 sm:px-8 lg:px-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center max-w-7xl mx-auto">
             <div>
-              <h2 className="text-7xl font-bold leading-[0.9] tracking-tighter mb-6">NIGHTFALL<br/>OVERSIZED<br/>HOODIE</h2>
-              <p className="text-gray-400 text-lg mb-8 max-w-md">A heavyweight, ultra-soft hoodie designed for comfort and style. Featuring a relaxed fit, subtle embroidered detailing, and a faded wash for that perfect worn-in look. Street-ready and built to stand out.</p>
+              <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[0.9] tracking-tighter mb-4 sm:mb-6">NIGHTFALL<br/>OVERSIZED<br/>HOODIE</h2>
+              <p className="text-gray-400 text-base sm:text-lg mb-6 sm:mb-8 max-w-md">A heavyweight, ultra-soft hoodie designed for comfort and style. Featuring a relaxed fit, subtle embroidered detailing, and a faded wash for that perfect worn-in look. Street-ready and built to stand out.</p>
               
               <div className="flex gap-4 items-center mb-10">
                 <span className="text-3xl font-bold">$89</span>
                 <span className="text-gray-500 line-through text-xl">$129</span>
               </div>
 
-              <button className="bg-white text-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage('shop')}
+                className="bg-white text-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors"
+              >
                 Shop now <ArrowRight size={16} />
               </button>
             </div>
@@ -584,16 +619,19 @@ export default function App() {
         </section>
 
         {/* Join Movement Banner */}
-        <section className="px-12 lg:px-24 py-8">
-          <div className="relative rounded-[3rem] overflow-hidden h-[600px] flex items-center p-16">
+        <section className="px-4 sm:px-8 lg:px-24 py-6 sm:py-8">
+          <div className="relative rounded-[2rem] sm:rounded-[3rem] overflow-hidden min-h-[320px] sm:h-[480px] lg:h-[600px] flex items-center p-8 sm:p-12 lg:p-16">
             <div className="absolute inset-0 bg-gradient-to-r from-red-900 to-red-600 mix-blend-multiply z-10"></div>
             <img src="https://i.postimg.cc/QdrvyMZp/Whats-App-Image-2026-02-21-at-5-47-46-AM-(1).jpg" alt="Join Movement" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
             
             <div className="relative z-20 max-w-2xl text-white">
-              <h2 className="text-7xl font-bold leading-[0.9] tracking-tighter mb-6">JOIN THE<br/>MOVEMENT.<br/>WEAR THE<br/>FUTURE.</h2>
-              <p className="text-xl text-white/80 mb-10 max-w-md">Streetwear designed for those who break the mold. Limited drops, bold designs, and premium quality—don't miss out.</p>
+              <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[0.9] tracking-tighter mb-4 sm:mb-6">JOIN THE<br/>MOVEMENT.<br/>WEAR THE<br/>FUTURE.</h2>
+              <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-10 max-w-md">Streetwear designed for those who break the mold. Limited drops, bold designs, and premium quality—don't miss out.</p>
               
-              <button className="bg-white text-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage('shop')}
+                className="bg-white text-black rounded-full px-8 py-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:bg-gray-200 transition-colors"
+              >
                 Shop now <ArrowRight size={16} />
               </button>
             </div>
@@ -601,10 +639,10 @@ export default function App() {
         </section>
 
         {/* Why Shop With Us */}
-        <section className="py-24 px-12 lg:px-24 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <section className="py-12 sm:py-24 px-4 sm:px-8 lg:px-24 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
             <div className="lg:col-span-1">
-              <h2 className="text-5xl font-bold mb-6 tracking-tight">WHY SHOP WITH US?</h2>
+              <h2 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">WHY SHOP WITH US?</h2>
               <p className="text-gray-500">We've got you covered with hassle-free shopping, top-tier service, and guarantees that keep you confident in every purchase.</p>
             </div>
             
@@ -644,14 +682,15 @@ export default function App() {
           </div>
         </section>
 
-        {/* Infinite Review Sliders */}
-        <section className="py-24 bg-gray-50 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-12 lg:px-24 mb-16 text-center">
-            <h2 className="text-5xl font-bold mb-6 tracking-tight">THE STREETS ARE TALKING</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">Don't just take our word for it. See what the community is saying about our latest drops.</p>
+        {/* Infinite Review Sliders — overflow-hidden on section prevents page-width blowout on mobile */}
+        <section className="py-12 sm:py-24 bg-gray-50" style={{ overflow: 'hidden', maxWidth: '100vw' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-24 mb-8 sm:mb-16 text-center">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">THE STREETS ARE TALKING</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base">Don't just take our word for it. See what the community is saying about our latest drops.</p>
           </div>
 
-          <div className="flex flex-col gap-8 relative pause-on-hover">
+          {/* Outer clip prevents the w-max rows from bleeding outside and causing horizontal scroll */}
+          <div className="flex flex-col gap-6 sm:gap-8 relative pause-on-hover" style={{ overflow: 'hidden' }}>
             {/* Row 1 - Left */}
             <div className="flex w-max animate-scroll-left">
               {[...reviewsRow1, ...reviewsRow1].map((review, idx) => (
@@ -676,24 +715,24 @@ export default function App() {
         </section>
 
         {/* Newsletter */}
-        <section className="bg-gray-100 py-24 px-12 lg:px-24">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <section className="bg-gray-100 py-12 sm:py-24 px-4 sm:px-8 lg:px-24">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div>
-              <h2 className="text-5xl font-bold mb-6 tracking-tight leading-none">SUBSCRIBE TO OUR<br/>NEWSLETTER NOW!</h2>
-              <p className="text-gray-500">Get top Framer components, exclusive freebies, and expert tips delivered to your inbox weekly.</p>
+              <h2 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6 tracking-tight leading-none">SUBSCRIBE TO OUR<br/>NEWSLETTER NOW!</h2>
+              <p className="text-gray-500 text-sm sm:text-base">Get top Framer components, exclusive freebies, and expert tips delivered to your inbox weekly.</p>
             </div>
             <div>
-              <form className="flex gap-4">
+              <form className="flex flex-col sm:flex-row gap-3">
                 <input 
                   type="email" 
                   placeholder="jane@email.com" 
                   className="flex-1 rounded-full px-6 py-4 border border-gray-300 focus:outline-none focus:border-black"
                 />
-                <button type="submit" className="bg-black text-white border border-black rounded-full px-8 py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black transition-colors">
+                <button type="submit" className="bg-black text-white border border-black rounded-full px-8 py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black transition-colors whitespace-nowrap">
                   Subscribe
                 </button>
               </form>
-              <p className="text-xs text-gray-400 mt-4 px-6">Weekly newsletter. Unsubscribe anytime.</p>
+              <p className="text-xs text-gray-400 mt-4 px-2">Weekly newsletter. Unsubscribe anytime.</p>
             </div>
           </div>
         </section>
@@ -704,8 +743,8 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#1a1a1a] text-white pt-24 pb-12 px-12 lg:px-24 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-24 relative z-10">
+      <footer className="bg-[#1a1a1a] text-white pt-12 sm:pt-24 pb-12 px-4 sm:px-8 lg:px-24 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-16 sm:mb-24 relative z-10">
           <div className="col-span-1 md:col-span-1">
             <h3 className="text-2xl font-display font-bold mb-6">VELARO</h3>
             <p className="text-gray-400 text-sm mb-6 uppercase tracking-wider font-bold">STREETWEAR FOR THE BOLD, BUILT FOR THE MOVEMENT.</p>
@@ -786,7 +825,10 @@ export default function App() {
             </div>
             
             {/* Details Section */}
-            <div className="w-full md:w-1/2 p-8 md:p-14 overflow-y-auto flex flex-col">
+            <div 
+              className="w-full md:w-1/2 p-8 md:p-14 overflow-y-auto flex flex-col no-scrollbar"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">New Arrival</span>
@@ -806,13 +848,20 @@ export default function App() {
                 <div>
                   <div className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex justify-between">
                     <span>Color</span>
-                    <span className="text-gray-500 font-medium">Selected: Black</span>
+                    <span className="text-gray-500 font-medium">
+                      Selected: {
+                        selectedColor === '#111111' ? 'Black' : 
+                        selectedColor === '#4a5568' ? 'Slate' : 
+                        selectedColor === '#e2e8f0' ? 'Light Gray' : 'White'
+                      }
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {['#111111', '#4a5568', '#e2e8f0', '#f5f5f5'].map((color, i) => (
                       <button 
                         key={i} 
-                        className={`w-10 h-10 rounded-full border-2 ${i === 0 ? 'border-black p-0.5' : 'border-transparent'} transition-all hover:scale-110`}
+                        onClick={() => setSelectedColor(color)}
+                        className={`w-10 h-10 rounded-full border-2 ${selectedColor === color ? 'border-black p-0.5' : 'border-transparent'} transition-all hover:scale-110`}
                       >
                         <div className="w-full h-full rounded-full border border-gray-200" style={{ backgroundColor: color }}></div>
                       </button>
@@ -830,7 +879,8 @@ export default function App() {
                     {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size, i) => (
                       <button 
                         key={size}
-                        className={`py-3 rounded-xl text-sm font-bold transition-all ${i === 2 ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                        onClick={() => setSelectedSize(size)}
+                        className={`py-3 rounded-xl text-sm font-bold transition-all ${selectedSize === size ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                       >
                         {size}
                       </button>
@@ -845,7 +895,7 @@ export default function App() {
                 </button>
                 <button 
                   onClick={() => addToCart(quickViewProduct)}
-                  className="flex-grow bg-black text-white border border-black rounded-2xl py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                  className="flex-grow cursor-pointer bg-black text-white border border-black rounded-2xl py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black hover:shadow-lg hover:-translate-y-0.5 transition-all"
                 >
                   Add to Cart
                 </button>
