@@ -52,22 +52,43 @@ const ReviewCard = ({ review }: { review: any }) => {
 };
 
 function ShopPage({ onQuickView, onAddToCart }: { onQuickView: (product: any) => void, onAddToCart: (product: any) => void }) {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
   const products = [
-    { id: 1, title: 'WHITE SUMMER TEE', desc: 'Lightweight and breathable, the BreezeFit White Summer Tee keeps you cool and fresh all summer long.', category: 'Tees', rating: 5.0, reviews: '1.2k', price: '$45.00', images: ['https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], sku: 'TEE-WHT-01' },
-    { id: 2, title: 'BLACK SUMMER TEE', desc: 'Stay stylish and comfortable in the CoolCore Black Summer Tee, crafted from breathable fabric perfect for warm days.', category: 'Tees', rating: 5.0, reviews: '1.2k', price: '$45.00', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], sku: 'TEE-BLK-01' },
-    { id: 3, title: 'SLEEK IPHONE CASE', desc: 'Durable and slim, the SleekGuard iPhone Case offers stylish protection against drops and scratches.', category: 'Accessories', rating: 4.4, reviews: '1k', price: '$29.90', images: ['https://i.postimg.cc/NjwZz0v7/Whats-App-Image-2026-02-21-at-5-47-46-AM-(3).jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], sku: 'ACC-IPH-01' },
-    { id: 4, title: 'SPRING JACKET', desc: 'Lightweight and versatile, the BreezeLite Spring Jacket combines comfort and style to keep you cozy on breezy days.', category: 'Outerwear', rating: 4.8, reviews: '100', price: '$120.00', images: ['https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg', 'https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg'], sku: 'JKT-SPR-01' },
-    { id: 5, title: 'SUMMER CAP', desc: 'Stay cool and protected with the SunShade Summer Cap, featuring breathable fabric and UV protection for sunny days.', category: 'Accessories', rating: 5.0, reviews: '1.2k', price: '$35.00', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg'], sku: 'ACC-CAP-01' },
-    { id: 6, title: 'URBAN PHANTOM', desc: 'A bold, oversized hoodie with edgy graphics and a stealthy aesthetic inspired by city nights.', category: 'Hoodies', rating: 4.8, reviews: '2.4k', price: '$89.00', images: ['https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], sku: 'HDY-URB-01' },
-    { id: 7, title: 'NEON REBELLION', desc: 'A statement piece with vibrant neon details and rebellious street art influences for a standout look.', category: 'Hoodies', rating: 4.9, reviews: '120', price: '$95.00', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], sku: 'HDY-NEO-01' },
-    { id: 8, title: 'SHADOW DRIP', desc: 'A sleek, minimalist hoodie with dark tones and subtle reflective accents for an effortless street vibe.', category: 'Hoodies', rating: 5.0, reviews: '1.2k', price: '$89.00', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], sku: 'HDY-SHD-01' },
-    { id: 9, title: 'ESSENTIAL TEE', desc: 'The perfect everyday tee, crafted from premium cotton for ultimate comfort and durability.', category: 'Tees', rating: 4.8, reviews: '2.4k', price: '$40.00', images: ['https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg', 'https://i.postimg.cc/NjwZz0v7/Whats-App-Image-2026-02-21-at-5-47-46-AM-(3).jpg'], sku: 'TEE-ESS-01' },
+    { id: 1, title: 'WHITE SUMMER TEE', desc: 'Lightweight and breathable, the BreezeFit White Summer Tee keeps you cool and fresh all summer long.', category: 'T-Shirts', rating: 5.0, reviews: '1.2k', price: 'EGP 45.00', images: ['https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], sku: 'TEE-WHT-01' },
+    { id: 2, title: 'BLACK SUMMER TEE', desc: 'Stay stylish and comfortable in the CoolCore Black Summer Tee, crafted from breathable fabric perfect for warm days.', category: 'T-Shirts', rating: 5.0, reviews: '1.2k', price: 'EGP 45.00', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], sku: 'TEE-BLK-01' },
+    { id: 3, title: 'SLEEK IPHONE CASE', desc: 'Durable and slim, the SleekGuard iPhone Case offers stylish protection against drops and scratches.', category: 'Accessories', rating: 4.4, reviews: '1k', price: 'EGP 29.90', images: ['https://i.postimg.cc/NjwZz0v7/Whats-App-Image-2026-02-21-at-5-47-46-AM-(3).jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], sku: 'ACC-IPH-01' },
+    { id: 4, title: 'SPRING JACKET', desc: 'Lightweight and versatile, the BreezeLite Spring Jacket combines comfort and style to keep you cozy on breezy days.', category: 'Jackets', rating: 4.8, reviews: '100', price: 'EGP 120.00', images: ['https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg', 'https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg'], sku: 'JKT-SPR-01' },
+    { id: 5, title: 'SUMMER CAP', desc: 'Stay cool and protected with the SunShade Summer Cap, featuring breathable fabric and UV protection for sunny days.', category: 'Accessories', rating: 5.0, reviews: '1.2k', price: 'EGP 35.00', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg'], sku: 'ACC-CAP-01' },
+    { id: 6, title: 'URBAN PHANTOM', desc: 'A bold, oversized hoodie with edgy graphics and a stealthy aesthetic inspired by city nights.', category: 'Hoodies', rating: 4.8, reviews: '2.4k', price: 'EGP 89.00', images: ['https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], sku: 'HDY-URB-01' },
+    { id: 7, title: 'NEON REBELLION', desc: 'A statement piece with vibrant neon details and rebellious street art influences for a standout look.', category: 'Hoodies', rating: 4.9, reviews: '120', price: 'EGP 95.00', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], sku: 'HDY-NEO-01' },
+    { id: 8, title: 'SHADOW DRIP', desc: 'A sleek, minimalist hoodie with dark tones and subtle reflective accents for an effortless street vibe.', category: 'Hoodies', rating: 5.0, reviews: '1.2k', price: 'EGP 89.00', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], sku: 'HDY-SHD-01' },
+    { id: 9, title: 'ESSENTIAL TEE', desc: 'The perfect everyday tee, crafted from premium cotton for ultimate comfort and durability.', category: 'T-Shirts', rating: 4.8, reviews: '2.4k', price: 'EGP 40.00', images: ['https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg', 'https://i.postimg.cc/NjwZz0v7/Whats-App-Image-2026-02-21-at-5-47-46-AM-(3).jpg'], sku: 'TEE-ESS-01' },
+    { id: 10, title: 'STREET CARGO PANTS', desc: 'Durable and stylish cargo pants with plenty of pockets for everyday utility.', category: 'Pants', rating: 4.7, reviews: '800', price: 'EGP 150.00', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/HkCFhL12/Whats-App-Image-2026-02-21-at-5-47-46-AM-(6).jpg'], sku: 'PNT-CRG-01' },
   ];
+
+  const categories = ['All', 'Jackets', 'Pants', 'T-Shirts'];
+  
+  const filteredProducts = products.filter(product => 
+    selectedCategory === 'All' ? true : product.category === selectedCategory
+  );
 
   return (
     <div className="px-12 lg:px-24 py-12 max-w-7xl mx-auto">
+      <div className="flex gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {categories.map(cat => (
+          <button 
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-6 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-colors ${selectedCategory === cat ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <div key={product.id} className="flex flex-col group cursor-pointer" onClick={() => onQuickView(product)}>
             <div className="bg-gray-100 rounded-3xl aspect-[4/5] relative mb-6 overflow-hidden">
               <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-gray-800 shadow-sm z-10 uppercase tracking-wide">
@@ -164,7 +185,7 @@ export default function App() {
   };
 
   const cartTotal = cartItems.reduce((total, item) => {
-    const price = parseFloat(item.price.replace('$', ''));
+    const price = parseFloat(item.price.replace('EGP ', ''));
     return total + (price * item.quantity);
   }, 0);
 
@@ -400,7 +421,7 @@ export default function App() {
             {/* Product 1 */}
             <div 
               className="group cursor-pointer"
-              onClick={() => setQuickViewProduct({ title: 'SHADOW DRIP', desc: 'A sleek, minimalist hoodie with dark tones and subtle reflective accents for an effortless street vibe.', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], price: '$89', sku: 'SHD-DRP-01' })}
+              onClick={() => setQuickViewProduct({ title: 'SHADOW DRIP', desc: 'A sleek, minimalist hoodie with dark tones and subtle reflective accents for an effortless street vibe.', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], price: 'EGP 89', sku: 'SHD-DRP-01' })}
             >
               <div className="relative bg-gray-100 rounded-3xl overflow-hidden aspect-[4/5] mb-6">
                 <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full z-10 uppercase tracking-wide">New</div>
@@ -410,15 +431,15 @@ export default function App() {
               <h3 className="text-2xl font-bold mb-2">SHADOW DRIP</h3>
               <p className="text-gray-500 text-sm mb-4">A sleek, minimalist hoodie with dark tones and subtle reflective accents for an effortless street vibe.</p>
               <div className="flex gap-3 items-center">
-                <span className="font-bold">$89</span>
-                <span className="text-gray-400 line-through text-sm">$129</span>
+                <span className="font-bold">EGP 89</span>
+                <span className="text-gray-400 line-through text-sm">EGP 129</span>
               </div>
             </div>
 
             {/* Product 2 */}
             <div 
               className="group cursor-pointer"
-              onClick={() => setQuickViewProduct({ title: 'URBAN PHANTOM', desc: 'Urban Phantom - A bold, oversized hoodie with edgy graphics and a stealthy aesthetic inspired by city nights.', images: ['https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], price: '$89', sku: 'URB-PHN-02' })}
+              onClick={() => setQuickViewProduct({ title: 'URBAN PHANTOM', desc: 'Urban Phantom - A bold, oversized hoodie with edgy graphics and a stealthy aesthetic inspired by city nights.', images: ['https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg', 'https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg'], price: 'EGP 89', sku: 'URB-PHN-02' })}
             >
               <div className="relative bg-gray-100 rounded-3xl overflow-hidden aspect-[4/5] mb-6">
                 <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full z-10 uppercase tracking-wide">New</div>
@@ -428,15 +449,15 @@ export default function App() {
               <h3 className="text-2xl font-bold mb-2">URBAN PHANTOM</h3>
               <p className="text-gray-500 text-sm mb-4">Urban Phantom - A bold, oversized hoodie with edgy graphics and a stealthy aesthetic inspired by city nights.</p>
               <div className="flex gap-3 items-center">
-                <span className="font-bold">$89</span>
-                <span className="text-gray-400 line-through text-sm">$129</span>
+                <span className="font-bold">EGP 89</span>
+                <span className="text-gray-400 line-through text-sm">EGP 129</span>
               </div>
             </div>
 
             {/* Product 3 */}
             <div 
               className="group cursor-pointer"
-              onClick={() => setQuickViewProduct({ title: 'NEON REBELLION', desc: 'A statement piece with vibrant neon details and rebellious street art influences for a standout look.', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], price: '$89', sku: 'NEO-REB-03' })}
+              onClick={() => setQuickViewProduct({ title: 'NEON REBELLION', desc: 'A statement piece with vibrant neon details and rebellious street art influences for a standout look.', images: ['https://i.postimg.cc/13Zbjz1M/Whats-App-Image-2026-02-21-at-5-47-46-AM.jpg', 'https://i.postimg.cc/Gm165pnF/Whats-App-Image-2026-02-21-at-5-47-46-AM-(2).jpg'], price: 'EGP 89', sku: 'NEO-REB-03' })}
             >
               <div className="relative bg-gray-100 rounded-3xl overflow-hidden aspect-[4/5] mb-6">
                 <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full z-10 uppercase tracking-wide">New</div>
@@ -446,8 +467,8 @@ export default function App() {
               <h3 className="text-2xl font-bold mb-2">NEON REBELLION</h3>
               <p className="text-gray-500 text-sm mb-4">A statement piece with vibrant neon details and rebellious street art influences for a standout look.</p>
               <div className="flex gap-3 items-center">
-                <span className="font-bold">$89</span>
-                <span className="text-gray-400 line-through text-sm">$129</span>
+                <span className="font-bold">EGP 89</span>
+                <span className="text-gray-400 line-through text-sm">EGP 129</span>
               </div>
             </div>
           </div>
@@ -456,8 +477,8 @@ export default function App() {
         {/* Features Grid */}
         <section className="px-4 sm:px-8 lg:px-24 py-10 lg:py-16">
           <div className="max-w-3xl mb-8 lg:mb-12">
-            <h2 className="text-3xl sm:text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">SHIP YOUR WEBSITE QUICKLY WITH<br/>FRAMEBLOX</h2>
-            <p className="text-gray-500 font-medium max-w-2xl">Use prebuilt templates and components for a professional, stunning look. Save time and focus on content with our user-friendly, customizable design solutions.</p>
+            <h2 className="text-3xl sm:text-[3.5rem] font-display font-bold mb-4 tracking-tighter leading-[1] uppercase">ELEVATE YOUR STYLE WITH<br/>VELARO</h2>
+            <p className="text-gray-500 font-medium max-w-2xl">Discover premium streetwear, bold designs, and exclusive drops. Upgrade your wardrobe effortlessly with our carefully curated fashion collections.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
@@ -542,7 +563,7 @@ export default function App() {
               <div 
                 key={idx} 
                 className="min-w-[320px] h-[480px] relative rounded-3xl overflow-hidden snap-center group flex-shrink-0 cursor-pointer"
-                onClick={() => setQuickViewProduct({ ...item, price: '$89.00', sku: `FEAT-${idx}`, rating: 5.0, reviews: '1.2k' })}
+                onClick={() => setQuickViewProduct({ ...item, price: 'EGP 89.00', sku: `FEAT-${idx}`, rating: 5.0, reviews: '1.2k' })}
               >
                 <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-500 group-hover:opacity-0" referrerPolicy="no-referrer" />
                 <img src={item.images[1]} alt={item.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105" referrerPolicy="no-referrer" />
@@ -578,8 +599,8 @@ export default function App() {
               <p className="text-gray-400 text-base sm:text-lg mb-6 sm:mb-8 max-w-md">A heavyweight, ultra-soft hoodie designed for comfort and style. Featuring a relaxed fit, subtle embroidered detailing, and a faded wash for that perfect worn-in look. Street-ready and built to stand out.</p>
               
               <div className="flex gap-4 items-center mb-10">
-                <span className="text-3xl font-bold">$89</span>
-                <span className="text-gray-500 line-through text-xl">$129</span>
+                <span className="text-3xl font-bold">EGP 89</span>
+                <span className="text-gray-500 line-through text-xl">EGP 129</span>
               </div>
 
               <button 
@@ -593,7 +614,7 @@ export default function App() {
             <div className="relative">
               <div 
                 className="rounded-3xl overflow-hidden aspect-[4/5] mb-6 cursor-pointer group relative"
-                onClick={() => setQuickViewProduct({ title: 'NIGHTFALL OVERSIZED HOODIE', desc: 'A heavyweight, ultra-soft hoodie designed for comfort and style. Featuring a relaxed fit, subtle embroidered detailing, and a faded wash for that perfect worn-in look. Street-ready and built to stand out.', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], price: '$89.00', sku: 'HDY-NGT-01', rating: 4.9, reviews: '3.1k' })}
+                onClick={() => setQuickViewProduct({ title: 'NIGHTFALL OVERSIZED HOODIE', desc: 'A heavyweight, ultra-soft hoodie designed for comfort and style. Featuring a relaxed fit, subtle embroidered detailing, and a faded wash for that perfect worn-in look. Street-ready and built to stand out.', images: ['https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg', 'https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg'], price: 'EGP 89.00', sku: 'HDY-NGT-01', rating: 4.9, reviews: '3.1k' })}
               >
                 <img src="https://i.postimg.cc/3xHzcwQ2/Whats-App-Image-2026-02-21-at-5-47-45-AM.jpg" alt="Nightfall Hoodie" className="w-full h-full object-cover absolute inset-0 transition-opacity duration-500 group-hover:opacity-0" referrerPolicy="no-referrer" />
                 <img src="https://i.postimg.cc/4NcrP9qW/Whats-App-Image-2026-02-21-at-5-47-45-AM-(2).jpg" alt="Nightfall Hoodie" className="w-full h-full object-cover absolute inset-0 transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105" referrerPolicy="no-referrer" />
@@ -839,7 +860,7 @@ export default function App() {
                   </div>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tighter mb-4 text-gray-900">{quickViewProduct.title}</h2>
-                <div className="text-3xl font-medium text-gray-900 mb-6">{quickViewProduct.price || '$89.00'}</div>
+                <div className="text-3xl font-medium text-gray-900 mb-6">{quickViewProduct.price || 'EGP 89.00'}</div>
                 <p className="text-gray-600 leading-relaxed text-lg">{quickViewProduct.desc}</p>
               </div>
               
@@ -957,7 +978,7 @@ export default function App() {
                             <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-black hover:bg-gray-50 rounded-r-full transition-colors">+</button>
                           </div>
                           <span className="font-bold">
-                            ${(parseFloat(item.price.replace('$', '')) * item.quantity).toFixed(2)}
+                            ${(parseFloat(item.price.replace('EGP ', '')) * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -971,7 +992,7 @@ export default function App() {
               <div className="p-6 border-t border-gray-100 bg-gray-50">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-gray-600 font-medium">Subtotal</span>
-                  <span className="text-2xl font-bold">${cartTotal.toFixed(2)}</span>
+                  <span className="text-2xl font-bold">EGP {cartTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-gray-500 text-sm mb-6">Shipping and taxes calculated at checkout.</p>
                 <button className="w-full bg-black text-white border border-black rounded-2xl py-4 font-bold uppercase tracking-wide hover:bg-white hover:text-black hover:shadow-lg transition-all">

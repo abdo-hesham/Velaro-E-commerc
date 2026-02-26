@@ -46,7 +46,7 @@ export default function ProductPage({ productId, onProductSelect }: { productId:
           <div className="mb-6">
             <h1 className="text-3xl md:text-5xl font-display font-bold mb-4 tracking-tighter uppercase">{product.name}</h1>
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-2xl font-medium">${product.price.toFixed(2)}</span>
+              <span className="text-2xl font-medium">EGP {product.price.toFixed(2)}</span>
               <div className="flex items-center gap-1 text-sm">
                 <div className="flex text-yellow-400">
                   {[1,2,3,4,5].map(star => <Star key={star} size={16} fill="currentColor" />)}
@@ -118,7 +118,7 @@ export default function ProductPage({ productId, onProductSelect }: { productId:
                 </span>
               </summary>
               <div className="text-gray-600 text-sm mt-4 leading-relaxed">
-                <p>Free standard shipping on orders over $100. Returns accepted within 30 days of delivery. Items must be in original condition with tags attached.</p>
+                <p>Free standard shipping on orders over EGP 100. Returns accepted within 30 days of delivery. Items must be in original condition with tags attached.</p>
               </div>
             </details>
           </div>

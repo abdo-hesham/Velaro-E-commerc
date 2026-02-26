@@ -36,7 +36,7 @@ export default function ProductCard({ id, name, price, image, category, onSelect
         <div className="text-xs text-gray-500 mb-1 uppercase tracking-wider">{category}</div>
         <div className="flex justify-between items-start gap-2">
           <h3 className="font-medium text-gray-900 leading-tight cursor-pointer hover:underline" onClick={() => onSelect(id)}>{name}</h3>
-          <span className="font-medium whitespace-nowrap">${price.toFixed(2)}</span>
+          <span className="font-medium whitespace-nowrap">EGP {price.toFixed(2)}</span>
         </div>
       </div>
     </div>
